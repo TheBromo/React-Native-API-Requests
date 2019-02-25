@@ -1,5 +1,5 @@
 import React from 'react';
-import requests from './Requests.js'
+import Requests from './requests.js'
 import {FlatList, ActivityIndicator, Text, View } from 'react-native';
 
 export default class App extends React.Component {
@@ -10,14 +10,12 @@ export default class App extends React.Component {
   }
 
   componentDidMount(){
-    requests.getTestData().then(movies => {
+    Requests.getTestData().then(movies => {
       this.setState({
         isLoading: false,
         dataSource: movies,
-      }, function(){
-  
       });
-    })
+    });
   }
 
 
