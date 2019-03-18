@@ -10,12 +10,19 @@ export default class App extends React.Component {
   }
 
   componentDidMount(){
-    Requests.getTestData().then(movies => {
+    Requests.getData('https://facebook.github.io/react-native/movies.json').then(data => {
+      this.setState({
+        isLoading: false,
+        dataSource: data.movies,
+      });
+    });
+    /*
+    Requests.postData().then(movies => {
       this.setState({
         isLoading: false,
         dataSource: movies,
       });
-    });
+    });*/
   }
 
 
