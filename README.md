@@ -6,7 +6,7 @@ First of all, import the JS File as following, at the top of the file where you 
 import Requests from './requests.js'
 ```
 
-When using a method of the API Request librarby you have to use the keyword `then`. This is because the API requests are asynchronous methods. When using the library your code should have this pattern:
+When using a method of the API Request library you have to use the keyword `then`. This is because the API requests are asynchronous methods. When using the library your code should have this pattern:
 ```js
 // getData() returns an object.
 Requests.someMethod(argument1,argument2).then(data => {
