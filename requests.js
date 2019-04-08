@@ -28,6 +28,8 @@ class Requests {
   }
 
   //02_Discticts
+  //https://documenter.getpostman.com/view/5848189/Rzfni6B2
+
   async getAllDistricts() {
     return getData(host + version + "/districts");
   }
@@ -44,11 +46,13 @@ class Requests {
       );
   }
 
-  async getDistrictViaId(id) {
-    if (notNull(id)) return getData(host + "/v1/districts/" + id);
+  async getDistrictViaId(districtId) {
+    if (notNull(districtId)) return getData(host + "/v1/districts/" + districtId);
   }
 
   //03_Routes
+  //https://documenter.getpostman.com/view/5848189/Rzfni6B3
+  
   async queryRoutes(name, approxtime) {
     if (notNull(approxtime)) {
       if (notNull(name)) {
@@ -76,21 +80,25 @@ class Requests {
   }
 
   //04_Locations
+  //https://documenter.getpostman.com/view/5848189/Rzfni6B4
+  
   async queryLocation(name) {
     if (notNull(name))
       return getData(host + version + "/locations/?name=" + name);
   }
 
-  async getLocationsForRoute(id) {
-    if (notNull(id))
-      return getData(host + version + "routes/" + id + "/locations");
+  async getLocationsForRoute(routeId) {
+    if (notNull(routeId))
+      return getData(host + version + "routes/" + routeId + "/locations");
   }
 
-  async getLocatoinViaId(id) {
-    if (notNull(id)) return getData(host + version + "locations/" + id);
+  async getLocatoinViaId(locationId) {
+    if (notNull(locationId)) return getData(host + version + "locations/" + locationId);
   }
 
-  async 
+  async getLocationsForDistrict(districtId){
+    if (notNull(districtId)) return getData(host + version + "districts/" + districtId+"/locations");
+  }
 }
 
 const requests = new Requests();
