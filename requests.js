@@ -1,14 +1,36 @@
 class Requests {
   static host = "https://geodb.thecodinglab.ch/";
   static version = "v1/";
-  static address = this.host+this.version;
+  static address = this.host + this.version;
 
-  async getData(url) {
+  async getData(url = ``) {
     const response = await fetch(url);
     return await response.json();
   }
 
-  async postData(url, data) {
+  async postDataXauth(url = ``, x_auth_token, data = {}) {
+    const response = await fetch(url, {
+      method: "POST", // GET(default), POST, PUT, DELETE, etc.
+      headers: {
+        "X-Auth-Token": x_auth_token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data) // body data type must match "Content-Type" header
+    });
+    return await response.json();
+  }
+  
+  async getDataXauth(url = ``, x_auth_token) {
+    const response = await fetch(url, {
+      method: "GET", // GET(default), POST, PUT, DELETE, etc.
+      headers: {
+        "X-Auth-Token": x_auth_token,
+      },
+    });
+    return await response.json();
+  }
+
+  async postData(url = ``, data) {
     const response = await postJsonData(url, data);
     return await response.json();
   }
@@ -18,18 +40,6 @@ class Requests {
       method: "POST", // GET(default), POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json"
-        // "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: JSON.stringify(data) // body data type must match "Content-Type" header
-    });
-  }
-
-  postJsonData(url = ``, token) {
-    return fetch(url, {
-      method: "GET", // GET(default), POST, PUT, DELETE, etc.
-      headers: {
-        "X-Auth-Token": token
-        // "Content-Type": "application/x-www-form-urlencoded",
       },
       body: JSON.stringify(data) // body data type must match "Content-Type" header
     });
@@ -43,39 +53,52 @@ class Requests {
   //https://documenter.getpostman.com/view/5848189/Rzfni6B1
 
   async registerNewUser(username, email, password) {
-    if (notNull(username) && notNull(email) && notNull(password)) {
-      return await postData(`${this.address}auth/register`,
+    if (this.notNull(username) && this.notNull(email) && this.notNull(password)) {
+      return await this.postData(`${this.address}auth/register`,
         {
           'username': username,
           'email': email,
           'password': password
         });
-    }else{
-      throw "not all parameters set";
+    } else {
+      throw "username, password or email not set";
     }
   }
 
   async loginAsUser(username, password) {
-    if (notNull(username) && notNull(password)) {
-      return await postJsonData(`${this.address}auth/login`, {
+    if (this.notNull(username) && this.notNull(password)) {
+      return await this.postJsonData(`${this.address}auth/login`, {
         'username': username,
         'password': password
       });
-    }else{
+    } else {
       throw "username or password not set";
     }
   }
-  //not sure if it has to be implemented
-  async getAccountDetails() { }
 
-  async getOwnCapabilities() { }
+  //x_auth_token is returned from "loginAsUser" function
+  async getAccountDetails(x_auth_token) {
+    if (this.notNull(x_auth_token)) {
+      return await this.getDataXauth(`${this.address}/user/me/details`);
+    }else{
+      throw "no x_auth_token set"
+    }
+  }
+
+  async getOwnCapabilities(x_auth_token) {
+    if (notNull(x_auth_token)) {
+      return await this.getDataXauth(`${this.address}/user/me/capabilities`);
+    }else{
+      throw "no x_auth_token set"
+    }
+  }
 
   async forgotPassword(username) {
     if (notNull(username)) {
-      return await postJsonData(`${this.address}/user/me/forgot-password`, {
+      return await this.postJsonData(`${this.address}/user/me/forgot-password`, {
         "username": username
       });
-    }else{
+    } else {
       throw "username not set";
     }
   }
@@ -86,60 +109,76 @@ class Requests {
   //https://documenter.getpostman.com/view/5848189/Rzfni6B2
 
   async getAllDistricts() {
-    return await getData(`${address}districts/`);
+    return await this.getData(`${address}districts/`);
   }
 
   async queryDistricts(districtname, zipcode) {
-    if (notNull(districtname) && notNull(zipcode))
-      return await getData(`${this.address}districts/?name?=${districtname}&zip_code?=${zipcode}`
+    if (notNull(districtname) && notNull(zipcode)) {
+      return await this.getData(`${this.address}districts/?name?=${districtname}&zip_code?=${zipcode}`
       );
+    } else {
+      throw "disctrictname or zipcode not set";
+    }
   }
 
   async getDistrictViaId(districtId) {
-    if (notNull(districtId)) return await getData(`${this.address}districts/${districtId}`);
+    if (notNull(districtId)) {
+      return await this.getData(`${this.address}districts/${districtId}`);
+    } else {
+      throw "district id not set";
+    }
   }
 
   //03_Routes
   //https://documenter.getpostman.com/view/5848189/Rzfni6B3
 
   async queryRoutes(routename, approxtime) {
-    if (notNull(approxtime)) {
-      if (notNull(name)) {
-        return await getData(`${this.address}routes/?name=${routename}&approx_time=${approxtime}`);
+    if (this.notNull(approxtime)) {
+      if (this.notNull(name)) {
+        return await this.getData(`${this.address}routes/?name=${routename}&approx_time=${approxtime}`);
       } else {
-        return await getData(`${this.address}routes/?approx_time=${approxtime}`);
+        return await this.getData(`${this.address}routes/?approx_time=${approxtime}`);
       }
+    } else {
+      throw "approx time not set";
     }
   }
 
   async getRoutesForDistrict(discrictId) {
-    if (notNull(districtId))
-      return await getData(`${this.address}districts/${discrictId}/routes`);
+    if (this.notNull(districtId)) {
+      return await this.getData(`${this.address}districts/${discrictId}/routes`);
+    } else {
+      throw "district id not set";
+    }
   }
 
   async getRouteViaID(routeId) {
-    if (notNull(routeId)) return await getData(`${this.address}routes/${routeId}`);
+    if (this.notNull(routeId)) {
+      return await this.getData(`${this.address}routes/${routeId}`);
+    } else {
+      throw "routeId not set";
+    }
   }
 
   //04_Locations
   //https://documenter.getpostman.com/view/5848189/Rzfni6B4
 
   async queryLocation(name) {
-    if (notNull(name))
-      return await getData(`${this.address}locations/?name=${name}`);
+    if (this.notNull(name))
+      return await this.getData(`${this.address}locations/?name=${name}`);
   }
 
   async getLocationsForRoute(routeId) {
-    if (notNull(routeId))
-      return await getData(`${this.address}routes/${routeId}/locations`);
+    if (this.notNull(routeId))
+      return await this.getData(`${this.address}routes/${routeId}/locations`);
   }
 
   async getLocatoinViaId(locationId) {
-    if (notNull(locationId)) return await getData(`${this.address}locations/${locationId}`);
+    if (this.notNull(locationId)) return await this.getData(`${this.address}locations/${locationId}`);
   }
 
   async getLocationsForDistrict(districtId) {
-    if (notNull(districtId)) return await getData(`${this.address}districts/${districtId}/locations`);
+    if (this.notNull(districtId)) return await this.getData(`${this.address}districts/${districtId}/locations`);
   }
 }
 
