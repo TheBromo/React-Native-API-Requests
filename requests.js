@@ -1,7 +1,7 @@
 class Requests {
-  static host = "https://geodb.thecodinglab.ch/";
+  static host = "https://geodb.thecodinglab.dev/";
   static version = "v1/";
-  static address = this.host + this.version;
+  static address = Requests.host + Requests.version;
 
   async getData(url = ``) {
     const response = await fetch(url);
@@ -54,7 +54,7 @@ class Requests {
 
   async registerNewUser(username, email, password) {
     if (this.notNull(username) && this.notNull(email) && this.notNull(password)) {
-      return await this.postData(`${this.address}auth/register`,
+      return await this.postData(`${Requests.address}auth/register`,
         {
           'username': username,
           'email': email,
@@ -67,7 +67,7 @@ class Requests {
 
   async loginAsUser(username, password) {
     if (this.notNull(username) && this.notNull(password)) {
-      return await this.postJsonData(`${this.address}auth/login`, {
+      return await this.postJsonData(`${Requests.address}auth/login`, {
         'username': username,
         'password': password
       });
@@ -79,23 +79,23 @@ class Requests {
   //x_auth_token is returned from "loginAsUser" function
   async getAccountDetails(x_auth_token) {
     if (this.notNull(x_auth_token)) {
-      return await this.getDataXauth(`${this.address}/user/me/details`);
+      return await this.getDataXauth(`${Requests.address}user/me/details`);
     }else{
       throw "no x_auth_token set"
     }
   }
 
   async getOwnCapabilities(x_auth_token) {
-    if (notNull(x_auth_token)) {
-      return await this.getDataXauth(`${this.address}/user/me/capabilities`);
+    if (this.notNull(x_auth_token)) {
+      return await this.getDataXauth(`${Requests.address}user/me/capabilities`);
     }else{
       throw "no x_auth_token set"
     }
   }
 
   async forgotPassword(username) {
-    if (notNull(username)) {
-      return await this.postJsonData(`${this.address}/user/me/forgot-password`, {
+    if (this.notNull(username)) {
+      return await this.postJsonData(`${Requests.address}user/me/forgot-password`, {
         "username": username
       });
     } else {
@@ -109,12 +109,13 @@ class Requests {
   //https://documenter.getpostman.com/view/5848189/Rzfni6B2
 
   async getAllDistricts() {
-    return await this.getData(`${address}districts/`);
+    console.log(`${Requests.address}districts/`);
+    return await this.getData(`${Requests.address}districts/`);
   }
 
   async queryDistricts(districtname, zipcode) {
-    if (notNull(districtname) && notNull(zipcode)) {
-      return await this.getData(`${this.address}districts/?name?=${districtname}&zip_code?=${zipcode}`
+    if (this.notNull(districtname) && this.notNull(zipcode)) {
+      return await this.getData(`${Requests.address}districts/?name?=${districtname}&zip_code?=${zipcode}`
       );
     } else {
       throw "disctrictname or zipcode not set";
@@ -122,8 +123,8 @@ class Requests {
   }
 
   async getDistrictViaId(districtId) {
-    if (notNull(districtId)) {
-      return await this.getData(`${this.address}districts/${districtId}`);
+    if (this.notNull(districtId)) {
+      return await this.getData(`${Requests.address}districts/${districtId}`);
     } else {
       throw "district id not set";
     }
@@ -135,9 +136,9 @@ class Requests {
   async queryRoutes(routename, approxtime) {
     if (this.notNull(approxtime)) {
       if (this.notNull(name)) {
-        return await this.getData(`${this.address}routes/?name=${routename}&approx_time=${approxtime}`);
+        return await this.getData(`${Requests.address}routes/?name=${routename}&approx_time=${approxtime}`);
       } else {
-        return await this.getData(`${this.address}routes/?approx_time=${approxtime}`);
+        return await this.getData(`${Requests.address}routes/?approx_time=${approxtime}`);
       }
     } else {
       throw "approx time not set";
@@ -146,7 +147,7 @@ class Requests {
 
   async getRoutesForDistrict(discrictId) {
     if (this.notNull(districtId)) {
-      return await this.getData(`${this.address}districts/${discrictId}/routes`);
+      return await this.getData(`${Requests.address}districts/${discrictId}/routes`);
     } else {
       throw "district id not set";
     }
@@ -154,7 +155,7 @@ class Requests {
 
   async getRouteViaID(routeId) {
     if (this.notNull(routeId)) {
-      return await this.getData(`${this.address}routes/${routeId}`);
+      return await this.getData(`${Requests.address}routes/${routeId}`);
     } else {
       throw "routeId not set";
     }
@@ -165,20 +166,20 @@ class Requests {
 
   async queryLocation(name) {
     if (this.notNull(name))
-      return await this.getData(`${this.address}locations/?name=${name}`);
+      return await this.getData(`${Requests.address}locations/?name=${name}`);
   }
 
   async getLocationsForRoute(routeId) {
     if (this.notNull(routeId))
-      return await this.getData(`${this.address}routes/${routeId}/locations`);
+      return await this.getData(`${Requests.address}routes/${routeId}/locations`);
   }
 
   async getLocatoinViaId(locationId) {
-    if (this.notNull(locationId)) return await this.getData(`${this.address}locations/${locationId}`);
+    if (this.notNull(locationId)) return await this.getData(`${Requests.address}locations/${locationId}`);
   }
 
   async getLocationsForDistrict(districtId) {
-    if (this.notNull(districtId)) return await this.getData(`${this.address}districts/${districtId}/locations`);
+    if (this.notNull(districtId)) return await this.getData(`${Requests.address}districts/${districtId}/locations`);
   }
 }
 

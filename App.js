@@ -10,21 +10,21 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Requests.loginAsUser("","").then(data => {
+    Requests.getAllDistricts().then(data => {
+      this.setState({
+        isLoading: false,
+        dataSource: data.data,
+      });
+    }).catch(error => console.log('Error:', error));
+  
+
+    /*Requests.loginAsUser("this","is test").then(data => {
       this.setState({
         isLoading: false,
         dataSource: data.succes,
       });
     }).catch(error => console.log('Error:', error));
-
-    /*
-    Requests.postData().then(movies => {
-      this.setState({
-        isLoading: false,
-        dataSource: movies,
-      });
-    });*/
-  }
+  */}
 
 
 
@@ -40,11 +40,7 @@ export default class App extends React.Component {
 
     return (
       <View style={{ flex: 1, paddingTop: 20 }}>
-        <FlatList
-          data={this.state.dataSource}
-          renderItem={({ item }) => <Text>{item.id}. {item.title}, {item.releaseYear}</Text>}
-          keyExtractor={({ id }, index) => id}
-        />
+        <Text>{JSON.stringify(this.state.dataSource)}</Text>
       </View>
     );
   }
