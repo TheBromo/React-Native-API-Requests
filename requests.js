@@ -19,7 +19,7 @@ class Requests {
     });
     return await response.json();
   }
-  
+
   async getDataXauth(url = ``, x_auth_token) {
     const response = await fetch(url, {
       method: "GET", // GET(default), POST, PUT, DELETE, etc.
@@ -30,13 +30,13 @@ class Requests {
     return await response.json();
   }
 
-  async postData(url = ``, data) {
-    const response = await postJsonData(url, data);
+  async postData(url = ``, data={}) {
+    const response = await this.postJsonData(url, data);
     return await response.json();
   }
 
-  postJsonData(url = ``, data = {}) {
-    return fetch(url, {
+  async postJsonData(url = ``, data = {}) {
+    return await fetch(url, {
       method: "POST", // GET(default), POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json"
@@ -51,7 +51,7 @@ class Requests {
 
   //01_User Account Control
   //https://documenter.getpostman.com/view/5848189/Rzfni6B1
-
+  //works
   async registerNewUser(username, email, password) {
     if (this.notNull(username) && this.notNull(email) && this.notNull(password)) {
       return await this.postData(`${Requests.address}auth/register`,
@@ -64,10 +64,10 @@ class Requests {
       throw "username, password or email not set";
     }
   }
-
+  //works
   async loginAsUser(username, password) {
     if (this.notNull(username) && this.notNull(password)) {
-      return await this.postJsonData(`${Requests.address}auth/login`, {
+      return await this.postData(`${Requests.address}auth/login`, {
         'username': username,
         'password': password
       });
@@ -76,26 +76,48 @@ class Requests {
     }
   }
 
-  //x_auth_token is returned from "loginAsUser" function
-  async getAccountDetails(x_auth_token) {
-    if (this.notNull(x_auth_token)) {
-      return await this.getDataXauth(`${Requests.address}user/me/details`);
-    }else{
-      throw "no x_auth_token set"
+  //works
+  async deleteAccount(password, x_auth_token) {
+    if (this.notNull(password) && this.notNull(x_auth_token)) {
+      console.log(`${Requests.address}user/me/delete-account?X-Auth-Token={{${x_auth_token}}}`);
+      return await this.postDataXauth(`${Requests.address}user/me/delete-account`,x_auth_token, {
+        'password': password
+      });
     }
   }
 
+  //works
+  async getAccountDetails(x_auth_token) {
+    if (this.notNull(x_auth_token)) {
+      return await this.getDataXauth(`${Requests.address}user/me/details`,x_auth_token);
+    } else {
+      throw "no x_auth_token set"
+    }
+  }
+  //works
   async getOwnCapabilities(x_auth_token) {
     if (this.notNull(x_auth_token)) {
-      return await this.getDataXauth(`${Requests.address}user/me/capabilities`);
-    }else{
+      return await this.getDataXauth(`${Requests.address}user/me/capabilities`,x_auth_token);
+    } else {
       throw "no x_auth_token set"
+    }
+  }
+  //works
+  async changePassword(oldPassword = ``, newPassword = ``, x_auth_token) {
+    if (this.notNull(oldPassword) && this.notNull(newPassword) && this.notNull(x_auth_token)) {
+      return await this.postDataXauth(`${Requests.address}user/me/change-password`, x_auth_token,
+        {
+          "old-password": oldPassword,
+          "new-password": newPassword
+        });
+    } else {
+      throw "not all parameters set"
     }
   }
 
   async forgotPassword(username) {
     if (this.notNull(username)) {
-      return await this.postJsonData(`${Requests.address}user/me/forgot-password`, {
+      return await this.postData(`${Requests.address}user/me/forgot-password`, {
         "username": username
       });
     } else {
@@ -103,25 +125,23 @@ class Requests {
     }
   }
 
-
-
   //02_Discticts
   //https://documenter.getpostman.com/view/5848189/Rzfni6B2
-
+  //works
   async getAllDistricts() {
     console.log(`${Requests.address}districts/`);
     return await this.getData(`${Requests.address}districts/`);
   }
 
+  //request probably works, but not on the server
   async queryDistricts(districtname, zipcode) {
     if (this.notNull(districtname) && this.notNull(zipcode)) {
-      return await this.getData(`${Requests.address}districts/?name?=${districtname}&zip_code?=${zipcode}`
-      );
+      return await this.getData(`${Requests.address}districts/?name?=${districtname}&zip_code?=${zipcode}`);
     } else {
       throw "disctrictname or zipcode not set";
     }
   }
-
+  //works
   async getDistrictViaId(districtId) {
     if (this.notNull(districtId)) {
       return await this.getData(`${Requests.address}districts/${districtId}`);
@@ -146,7 +166,7 @@ class Requests {
   }
 
   async getRoutesForDistrict(discrictId) {
-    if (this.notNull(districtId)) {
+    if (this.notNull(discrictId)) {
       return await this.getData(`${Requests.address}districts/${discrictId}/routes`);
     } else {
       throw "district id not set";
@@ -177,7 +197,7 @@ class Requests {
   async getLocatoinViaId(locationId) {
     if (this.notNull(locationId)) return await this.getData(`${Requests.address}locations/${locationId}`);
   }
-
+  //Probably works, but not on the server
   async getLocationsForDistrict(districtId) {
     if (this.notNull(districtId)) return await this.getData(`${Requests.address}districts/${districtId}/locations`);
   }

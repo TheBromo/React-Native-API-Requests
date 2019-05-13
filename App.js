@@ -1,7 +1,6 @@
 import React from 'react';
 import Requests from './requests.js'
 import { FlatList, ActivityIndicator, Text, View } from 'react-native';
-
 export default class App extends React.Component {
 
   constructor(props) {
@@ -10,24 +9,23 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Requests.getAllDistricts().then(data => {
+    let token;
+    /*Requests.registerNewUser("testUser", "frickoff@christ.com", "password").then(response => {
       this.setState({
         isLoading: false,
-        dataSource: data.data,
+        dataSource: response.data.token,
       });
+      token = response.data.token;
     }).catch(error => console.log('Error:', error));
-  
-
-    /*Requests.loginAsUser("this","is test").then(data => {
+*/
+    Requests.getLocationsForDistrict("5ca1b7714f07a5333d5dc2e1").then(r=>{
+      console.log(r);
       this.setState({
         isLoading: false,
-        dataSource: data.succes,
+        dataSource: r,
       });
-    }).catch(error => console.log('Error:', error));
-  */}
-
-
-
+    })
+  }
   render() {
 
     if (this.state.isLoading) {
