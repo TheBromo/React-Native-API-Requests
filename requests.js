@@ -133,8 +133,8 @@ class Requests {
     return await this.getData(`${Requests.address}districts/`);
   }
 
-  //request probably works, but not on the server
-  async queryDistricts(districtname, zipcode) {
+  //not on the server
+  async  (districtname, zipcode) {
     if (this.notNull(districtname) && this.notNull(zipcode)) {
       return await this.getData(`${Requests.address}districts/?name?=${districtname}&zip_code?=${zipcode}`);
     } else {
